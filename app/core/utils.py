@@ -6,8 +6,10 @@ _ID_ALPHABET = string.ascii_lowercase + string.digits
 
 
 def now() -> datetime:
-    """Current time (tz-aware UTC). Single source of "now" so tests can patch it."""
-    return datetime.now(timezone.utc)
+    """Current time (tz-aware UTC), truncated to milliseconds so stored values
+    round-trip exactly through the ms timestamps used on the wire (e.g. `?after=`)."""
+    t = datetime.now(timezone.utc)
+    return t.replace(microsecond=t.microsecond // 1000 * 1000)
 
 
 def to_ms(dt: datetime | None) -> int | None:

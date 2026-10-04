@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
-from app.routers import auth, dev, health, notifications, requests, users
+from app.routers import auth, dev, health, notifications, requests, rooms, users
 
 
 def create_app() -> FastAPI:
@@ -24,6 +24,7 @@ def create_app() -> FastAPI:
     api.include_router(users.router)
     api.include_router(requests.router)
     api.include_router(notifications.router)
+    api.include_router(rooms.router)
     if settings.enable_dev_endpoints:
         api.include_router(dev.router)
     app.include_router(api)
