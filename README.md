@@ -30,6 +30,19 @@ uv run pytest tests/test_rooms.py::test_mute_unmute    # one test
 
 Tests run against `TEST_DATABASE_URL`, which defaults to `postgresql+psycopg://localhost:5432/vibishan_test`. Migrations are applied automatically, and the database is re-seeded before every test. [tests/test_acceptance.py](tests/test_acceptance.py) runs the spec §11 checklist end to end.
 
+## Testing with Postman
+
+1. Start the server with `uv run uvicorn app.main:app --reload`.
+2. In Postman, go to **File → Import** and choose [postman/vibishan.postman_collection.json](postman/vibishan.postman_collection.json). It has 63 requests covering every endpoint, grouped into folders.
+3. Run **0. Setup** first. It resets the DB to the seed data and stores a JWT for every seed user in collection variables (`token_alice`, `token_leo`, ...).
+4. Run any folder, or the whole collection with the Collection Runner. The "Listen flow" and "Moderate flow" folders chain together: earlier requests save `requestId`, `roomId` and the other ids for later ones. Each request has status assertions.
+
+To use another host, change the `baseUrl` collection variable (default `http://localhost:8000/api/v1`).
+
+To run the collection headlessly, use `npx newman run postman/vibishan.postman_collection.json`.
+
+[postman/curls.sh](postman/curls.sh) has the same flow as plain curl commands. Run it with `bash postman/curls.sh`, or paste any single command into Postman with **Import → Raw text**.
+
 ## Environment variables
 
 | Name | Purpose |
