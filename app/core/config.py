@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "postgresql+psycopg://localhost:5432/vibishan"
-    jwt_secret: str = "dev-secret-change-me"
+    jwt_secret: str = "dev-only-secret-change-me-in-production-please"
     jwt_expires_days: int = 30
     cors_origins: str = "http://localhost:8081"
     enable_dev_endpoints: bool = False

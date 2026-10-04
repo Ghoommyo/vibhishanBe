@@ -6,7 +6,7 @@ TEST_DATABASE_URL = os.environ.get(
 )
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 os.environ["ENABLE_DEV_ENDPOINTS"] = "true"
-os.environ.setdefault("JWT_SECRET", "test-secret")
+os.environ.setdefault("JWT_SECRET", "test-secret-that-is-at-least-32-bytes-long")
 
 from pathlib import Path  # noqa: E402
 
@@ -46,3 +46,26 @@ def db():
 @pytest.fixture
 def client() -> TestClient:
     return TestClient(app)
+
+
+SEED_ROLES = {
+    "alice": "user", "bob": "user", "carol": "user",
+    "lisa": "listener", "leo": "listener", "maya": "moderator", "max": "moderator",
+}
+
+
+@pytest.fixture
+def auth(client):
+    """auth("alice") -> Authorization headers for a seed user (cached per test)."""
+    cache: dict[str, dict] = {}
+
+    def _auth(username: str) -> dict:
+        if username not in cache:
+            r = client.post("/api/v1/auth/login", json={
+                "username": username, "password": "password123", "role": SEED_ROLES[username],
+            })
+            assert r.status_code == 200, r.text
+            cache[username] = {"Authorization": f"Bearer {r.json()['token']}"}
+        return cache[username]
+
+    return _auth
